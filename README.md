@@ -1,545 +1,646 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Roleta Completo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roleta Mágica Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #fff;
-            text-align: center;
-            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            position: relative;
+            transition: all 0.3s ease;
         }
 
-        /* --- Estilos Gerais --- */
-        .page {
-            width: 100%;
-            max-width: 600px;
-            display: none;
-            animation: fadeIn 0.8s ease-out;
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .page.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-        }
-        
-        .container {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            margin-bottom: 20px;
-        }
-
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            background-color: #1e90ff;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #0d82d4;
-        }
-        input[type="text"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-        }
-        input[type="text"]::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        p {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-        #mensagem {
-            margin-top: 15px;
-            font-weight: bold;
-        }
-
-        /* --- Estilos da Página Inicial --- */
-        #home-page {
-            max-width: 500px;
-        }
-        #btnAdmin {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #000;
-            border: 2px solid #fff;
-            color: #fff;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            text-decoration: none;
-        }
-
-        /* --- Estilos da Página ADM --- */
-        #admin-page h2 {
-            font-size: 2rem;
-            margin-top: 0;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 10px;
-        }
-        #admin-page button.admin-button {
-            background-color: #007bff;
-            margin: 5px;
-        }
-        #admin-page button.admin-button:hover {
-            background-color: #0056b3;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-            text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        li {
-            background-color: rgba(255, 255, 255, 0.1);
-            margin-bottom: 8px;
-            padding: 10px;
-            border-radius: 4px;
-            border-left: 5px solid #1e90ff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        li .action-buttons-user {
-            display: flex;
-            gap: 10px;
-        }
-        li .edit-button {
-            background-color: #ffc107;
-            color: #333;
-            padding: 5px 10px;
-            font-size: 0.8rem;
-        }
-        li .edit-button:hover {
-            background-color: #e0a800;
-        }
-        li .delete-button {
-            background-color: #dc3545;
-            color: white;
-            padding: 5px 10px;
-            font-size: 0.8rem;
-        }
-        li .delete-button:hover {
-            background-color: #c82333;
-        }
-        .action-buttons {
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .action-buttons button {
-            background-color: #dc3545;
-        }
-        .action-buttons button:hover {
-            background-color: #c82333;
-        }
-        .log-container {
-            margin-top: 40px;
-            text-align: left;
-        }
-        .log-container h3 {
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 8px;
-        }
-
-        /* --- Estilos da Roleta --- */
-        #roleta-page {
-            max-width: none;
-        }
-        /* Novo estilo para o título personalizado */
-        #welcome-message {
-            font-size: 2.5rem; /* Ajuste conforme a necessidade */
-            margin-bottom: 10px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.7);
-            color: #fff; /* Certifique-se de que a cor é legível */
-        }
-        #current-time {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-        #container {
+        .wheel-container {
             position: relative;
             width: 320px;
             height: 320px;
-            margin-bottom: 40px;
-            border-radius: 50%;
-            border: 8px solid #000;
-            background: conic-gradient(
-                #1e90ff 0deg 180deg,
-                #ff3b3b 180deg 360deg
-            );
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
-            transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
-            cursor: pointer;
-            user-select: none;
-            z-index: 1;
+            margin: 0 auto;
+            perspective: 1000px;
         }
-        #seta {
+
+        .wheel {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .wheel-stand {
             position: absolute;
-            top: -60px;
+            top: -25px;
             left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            width: 60px;
+            height: 80px;
+            background: linear-gradient(45deg, #2c3e50, #34495e);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .arrow {
+            position: absolute;
+            top: 65px;
+            left: 50%;
+            transform: translateX(-50%) rotate(0deg);
             width: 0;
             height: 0;
-            border-left: 25px solid transparent;
-            border-right: 25px solid transparent;
-            border-bottom: 40px solid #fff;
-            filter: drop-shadow(0 0 3px rgba(0,0,0,0.9));
-            user-select: none;
-            transition: left 0.5s ease, border-bottom-color 0.5s ease;
-            transform: translateX(-50%);
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid #2c3e50;
+            z-index: 30;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .wheel-sector {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+            transform-origin: center;
+        }
+
+        .sector-blue {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+        }
+
+        .sector-red {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            transform: rotate(180deg);
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: #2c3e50;
+            border-radius: 50%;
+            border: 5px solid white;
             z-index: 10;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
         }
-        #girarBtn {
-            background: #000;
-            color: #1e90ff;
-            font-weight: 700;
-            font-size: 1.3rem;
-            padding: 15px 40px;
-            border: 3px solid #1e90ff;
-            border-radius: 50px;
-            box-shadow: 0 6px 15px rgba(30,144,255,0.5);
-            user-select: none;
+
+        .spinning {
+            animation: rotateWheel 3s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
         }
-        #girarBtn:hover:not(:disabled) {
-            background: #1e90ff;
-            color: #000;
-            box-shadow: 0 8px 25px rgba(30,144,255,0.8);
-            border-color: #000;
+
+        @keyframes rotateWheel {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(var(--final-rotation, 1080deg)); }
         }
-        #girarBtn:disabled {
-            background: #555;
-            color: #999;
-            cursor: not-allowed;
-            box-shadow: none;
-            border-color: #444;
+
+        .result-pulse {
+            animation: pulse 0.5s ease-in-out;
         }
-        #resultado {
-            margin-top: 30px;
-            font-size: 2rem;
-            font-weight: 700;
-            min-height: 50px;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.7);
-            user-select: none;
-            letter-spacing: 1px;
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
-        .back-button {
-            margin-top: 20px;
-            background: #fff;
-            color: #333;
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-scroll {
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #f1f1f1;
+        }
+
+        .table-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent) !important;
+            animation: highlight 2s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0%, 100% { background: transparent; }
+            50% { background: rgba(102, 126, 234, 0.1); }
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-6">
+    <!-- Botão Admin -->
+    <button onclick="showAdminLogin()" class="fixed top-6 right-6 z-50 w-12 h-12 bg-gray-800 text-white rounded-full shadow-2xl hover:bg-gray-700 transition-all duration-300 transform hover:scale-110 flex items-center justify-center">
+        <i class="fas fa-user-shield text-lg"></i>
+    </button>
 
-    <button id="btnAdmin" onclick="abrirPainelAdmin()">ADM</button>
+    <!-- Container Principal -->
+    <div class="glass-effect w-full max-w-2xl p-6 md:p-8 mx-auto fade-in">
+        <!-- Tela Inicial -->
+        <div id="welcome-screen" class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
+                Seja Bem Vindo
+            </h1>
+            
+            <div class="space-y-6">
+                <div class="relative">
+                    <input type="text" id="user-id" placeholder="Digite seu ID" 
+                           class="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 shadow-sm">
+                    <i class="fas fa-id-card absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                
+                <button onclick="verifyUser()" 
+                        class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-8 rounded-2xl font-semibold text-lg hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                    <i class="fas fa-arrow-right mr-2"></i>
+                    Entrar na Roleta
+                </button>
+                
+                <p id="welcome-error" class="text-red-500 font-medium text-sm"></p>
+            </div>
+        </div>
 
-    <div id="home-page" class="page active">
-        <div class="container">
-            <h1>Acesso à Roleta</h1>
-            <p>Por favor, insira seus dados para continuar.</p>
-            <input type="text" id="userInputHome" placeholder="Digite seu Nome de Usuário">
-            <input type="text" id="idInputUser" placeholder="Digite seu ID">
-            <button onclick="acessarRoleta()">Acessar</button>
-            <p id="mensagem"></p>
+        <!-- Tela da Roleta -->
+        <div id="roleta-screen" class="hidden text-center">
+            <h1 class="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                Roleta Mágica
+            </h1>
+            
+            <p class="text-gray-600 mb-8">Sua sorte está prestes a ser revelada!</p>
+            
+            <div class="wheel-container mb-8">
+                <div class="wheel-stand"></div>
+                <div class="arrow" id="arrow"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-sector sector-blue"></div>
+                    <div class="wheel-sector sector-red"></div>
+                    <div class="wheel-center"></div>
+                </div>
+            </div>
+            
+            <button id="spin-btn" onclick="spinWheel()" 
+                    class="bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-8 rounded-xl font-semibold text-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-300 shadow-lg mb-6">
+                <i class="fas fa-sync-alt mr-2"></i>
+                Girar Roleta
+            </button>
+            
+            <div class="result-pulse p-4 rounded-2xl bg-gray-50 border-2 border-gray-100 mb-6">
+                <p id="result" class="text-xl font-semibold"></p>
+            </div>
+            
+            <button onclick="backToWelcome()" 
+                    class="bg-gray-500 text-white py-2 px-6 rounded-xl font-medium hover:bg-gray-600 transition-all duration-300">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Voltar
+            </button>
         </div>
     </div>
 
-    <div id="admin-page" class="page">
-        <h1>Painel do Administrador</h1>
-        <div class="container">
-            <h2>Adicionar Participante</h2>
-            <input type="text" id="idInput" placeholder="ID do participante">
-            <input type="text" id="userInput" placeholder="Nome do usuário">
-            <button onclick="adicionarID()" class="admin-button">Adicionar</button>
+    <!-- Overlay e Painéis do ADM -->
+    <div id="admin-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+    
+    <!-- Login ADM -->
+    <div id="admin-login-panel" class="glass-effect fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-8 rounded-2xl w-96 hidden">
+        <div class="text-center mb-6">
+            <i class="fas fa-lock text-4xl text-blue-500 mb-3"></i>
+            <h2 class="text-2xl font-bold text-gray-800">Área do Administrador</h2>
+            <p class="text-gray-600 mt-2">Digite a senha para continuar</p>
         </div>
-        <div class="container">
-            <h2>Participantes Registrados:</h2>
-            <ul id="listaIds"></ul>
+        
+        <div class="space-y-4">
+            <div class="relative">
+                <input type="password" id="admin-password" placeholder="Senha" 
+                       class="w-full px-6 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200">
+                <i class="fas fa-key absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+            
+            <button onclick="loginAdmin()" 
+                    class="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold hover:bg-blue-600 transition-all duration-300">
+                Entrar
+            </button>
+            
+            <p id="admin-login-error" class="text-red-500 text-sm font-medium"></p>
         </div>
-        <div class="container log-container">
-            <h2>Histórico de Giros:</h2>
-            <ul id="historicoGiro"></ul>
-        </div>
-        <div class="action-buttons">
-            <button onclick="mostrarPagina('home-page')" class="back-button">Voltar</button>
-            <button onclick="resetarDados()" class="back-button">Resetar Dados</button>
-        </div>
+        
+        <button onclick="closeAdmin()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+        </button>
     </div>
 
-    <div id="roleta-page" class="page">
-        <h1 id="welcome-message">Seja Bem Vindo!</h1>
-        <p id="current-time"></p> <h1>Roleta Mágica</h1>
-        <div id="container"></div>
-        <div id="seta"></div>
-        <button id="girarBtn">Girar Roleta</button>
-        <div id="resultado"></div>
-        <button onclick="mostrarPagina('home-page')" class="back-button">Voltar</button>
+    <!-- Painel Principal do ADM -->
+    <div id="admin-panel" class="glass-effect fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-8 rounded-2xl w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto hidden">
+        <div class="text-center mb-8">
+            <i class="fas fa-crown text-4xl text-yellow-500 mb-3"></i>
+            <h2 class="text-3xl font-bold text-gray-800">Seja Bem Vindo ADM</h2>
+        </div>
+
+        <!-- Seção Usuários -->
+        <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-800">
+                    <i class="fas fa-users mr-2 text-blue-500"></i>
+                    Usuários Registrados
+                </h3>
+                <button onclick="showNewUserForm()" 
+                        class="bg-green-500 text-white px-4 py-2 rounded-xl text-sm hover:bg-green-600 transition-all duration-300">
+                    <i class="fas fa-plus mr-1"></i> Novo Usuário
+                </button>
+            </div>
+
+            <div class="table-scroll bg-gray-50 rounded-xl p-4 border border-gray-200">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Usuário</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-list" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+
+            <div id="new-user-form" class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">ID do usuário</label>
+                        <input type="text" id="new-user-id" placeholder="ID único" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome do usuário</label>
+                        <input type="text" id="new-user-name" placeholder="Nome completo" class="w-full px-4 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="addNewUser()" class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600">
+                        Salvar
+                    </button>
+                    <button onclick="cancelNewUser()" class="bg-gray-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-600">
+                        Cancelar
+                    </button>
+                </div>
+                <p id="new-user-error" class="text-red-500 text-sm mt-2"></p>
+            </div>
+        </div>
+
+        <!-- Seção Histórico -->
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                <i class="fas fa-history mr-2 text-purple-500"></i>
+                Histórico de Giros
+            </h3>
+            
+            <div class="table-scroll bg-gray-50 rounded-xl p-4 border border-gray-200">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Usuário</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Cor</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Data</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-list" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Ações do ADM -->
+        <div class="flex gap-4 justify-center">
+            <button onclick="resetData()" class="bg-red-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-red-600 transition-all duration-300">
+                <i class="fas fa-trash mr-2"></i> Resetar Dados
+            </button>
+            <button onclick="saveData()" class="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all duration-300">
+                <i class="fas fa-save mr-2"></i> Salvar Dados
+            </button>
+        </div>
+
+        <button onclick="closeAdmin()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+        </button>
     </div>
 
     <script>
-        // --- Variáveis Globais ---
-        let listaIDs = JSON.parse(localStorage.getItem("listaIDs")) || [];
-        let historicoGiro = JSON.parse(localStorage.getItem("historicoGiro")) || [];
-        let usuarioAtual = null;
+        // Dados e estado
+        let users = JSON.parse(localStorage.getItem('roleta_users')) || {};
+        let history = JSON.parse(localStorage.getItem('roleta_history')) || [];
+        let currentUser = null;
+        let isSpinning = false;
 
-        // --- Funções de Navegação ---
-        function mostrarPagina(pageId) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(pageId).classList.add('active');
-            
-            if (pageId === 'admin-page') {
-                atualizarLista();
-                atualizarHistoricoGiro();
-            } else if (pageId === 'roleta-page') {
-                // Atualiza a mensagem de boas-vindas e a hora ao entrar na página da roleta
-                document.getElementById('welcome-message').textContent = `Seja Bem Vindo, ${usuarioAtual.usuario}!`;
-                updateCurrentTime();
-            }
-        }
-
-        // Função para atualizar o horário
-        function updateCurrentTime() {
-            const now = new Date();
-            document.getElementById('current-time').textContent = now.toLocaleString('pt-BR', {
-                weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                timeZoneName: 'short'
-            });
-        }
-        // Atualiza a cada segundo
-        setInterval(updateCurrentTime, 1000);
-
-
-        // --- Funções do ADM e Usuário ---
-        function atualizarLista() {
-            const ul = document.getElementById("listaIds");
-            ul.innerHTML = "";
-            listaIDs.forEach(user => {
-                let li = document.createElement("li");
-                li.innerHTML = `
-                    <span>ID: ${user.id} | Usuário: ${user.usuario}</span>
-                    <div class="action-buttons-user">
-                        <button class="edit-button" onclick="editarUsuario('${user.id}')">Editar</button>
-                        <button class="delete-button" onclick="excluirUsuario('${user.id}')">Excluir</button>
-                    </div>
-                `;
-                ul.appendChild(li);
-            });
-        }
-
-        function atualizarHistoricoGiro() {
-            const ul = document.getElementById("historicoGiro");
-            ul.innerHTML = "";
-            historicoGiro.forEach(log => {
-                let li = document.createElement("li");
-                li.textContent = `[${log.horario}] - Usuário: ${log.usuario} - Cor: ${log.cor}`;
-                ul.appendChild(li);
-            });
-        }
-
-        function abrirPainelAdmin() {
-            const senha = prompt("Por favor, digite a senha de acesso:");
-            if (senha === "20082002") {
-                mostrarPagina('admin-page');
-            } else {
-                alert("Senha incorreta!");
-            }
-        }
-
-        function adicionarID() {
-            const idInput = document.getElementById("idInput");
-            const userInput = document.getElementById("userInput");
-            const novoID = idInput.value.trim();
-            const novoUsuario = userInput.value.trim();
-            
-            if (novoID === "" || novoUsuario === "") {
-                alert("Por favor, preencha todos os campos.");
-                return;
-            }
-            if (listaIDs.some(user => user.id === novoID)) {
-                alert("Este ID já está registrado.");
-                return;
-            }
-
-            listaIDs.push({ id: novoID, usuario: novoUsuario });
-            localStorage.setItem("listaIDs", JSON.stringify(listaIDs));
-            idInput.value = "";
-            userInput.value = "";
-            atualizarLista();
-            alert("Participante registrado com sucesso!");
-        }
-
-        function editarUsuario(id) {
-            const userParaEditar = listaIDs.find(user => user.id === id);
-            if (userParaEditar) {
-                const novoNome = prompt(`Digite o novo nome para o usuário com ID ${id}:`, userParaEditar.usuario);
-                if (novoNome !== null && novoNome.trim() !== "") {
-                    userParaEditar.usuario = novoNome.trim();
-                    localStorage.setItem("listaIDs", JSON.stringify(listaIDs));
-                    atualizarLista();
-                    alert("Nome do usuário alterado com sucesso!");
-                }
-            }
-        }
-        
-        function excluirUsuario(id) {
-            const confirmacao = confirm(`Você tem certeza que deseja excluir o usuário com ID ${id}?`);
-            if (confirmacao) {
-                listaIDs = listaIDs.filter(user => user.id !== id);
-                localStorage.setItem("listaIDs", JSON.stringify(listaIDs));
-                atualizarLista();
-                alert("Usuário excluído com sucesso.");
-            }
-        }
-
-        function resetarDados() {
-            const confirmacao = confirm("Você tem certeza que deseja resetar TODOS os dados (usuários e histórico)? Esta ação é irreversível.");
-            if (confirmacao) {
-                localStorage.removeItem("listaIDs");
-                localStorage.removeItem("historicoGiro");
-                listaIDs = [];
-                historicoGiro = [];
-                atualizarLista();
-                atualizarHistoricoGiro();
-                alert("Todos os dados foram resetados com sucesso.");
-            }
-        }
-
-        function acessarRoleta() {
-            const idInput = document.getElementById("idInputUser");
-            const userInput = document.getElementById("userInputHome");
-            const idUsuario = idInput.value.trim();
-            const nomeUsuario = userInput.value.trim();
-            const mensagem = document.getElementById("mensagem");
-
-            if (idUsuario === "" || nomeUsuario === "") {
-                mensagem.textContent = "Por favor, preencha todos os campos.";
-                mensagem.style.color = "red";
-                return;
-            }
-
-            const usuarioValido = listaIDs.find(user => user.id === idUsuario && user.usuario.toLowerCase() === nomeUsuario.toLowerCase());
-
-            if (usuarioValido) {
-                mensagem.textContent = "Acesso concedido! Carregando a roleta...";
-                mensagem.style.color = "green";
-                usuarioAtual = usuarioValido;
-                setTimeout(() => {
-                    mostrarPagina('roleta-page');
-                }, 1000);
-            } else {
-                mensagem.textContent = "ID ou Usuário não registrado. Acesso negado.";
-                mensagem.style.color = "red";
-            }
-        }
-
-        // --- Lógica da Roleta ---
-        const roleta = document.getElementById('container');
-        const seta = document.getElementById('seta');
-        const btnGirar = document.getElementById('girarBtn');
-        const resultado = document.getElementById('resultado');
-
-        let girando = false;
-
-        btnGirar.addEventListener('click', () => {
-            if (girando) return;
-            girando = true;
-            resultado.textContent = '';
-            btnGirar.disabled = true;
-
-            seta.style.left = '50%';
-            seta.style.borderBottomColor = '#fff';
-
-            const escolha = Math.floor(Math.random() * 2);
-            const corVencedora = escolha === 0 ? 'Azul' : 'Vermelho';
-
-            const anguloBase = escolha === 0 ? 0 : 180;
-            const anguloAleatorio = anguloBase + Math.random() * 180;
-            const voltas = 5;
-            const anguloFinal = voltas * 360 + anguloAleatorio;
-
-            roleta.style.transition = 'transform 4s cubic-bezier(0.33, 1, 0.68, 1)';
-            roleta.style.transform = `rotate(${anguloFinal}deg)`;
-
-            roleta.addEventListener('transitionend', function handler() {
-                const anguloAjustado = anguloAleatorio % 360;
-                roleta.style.transition = 'none';
-                roleta.style.transform = `rotate(${anguloAjustado}deg)`;
-
-                if (escolha === 0) {
-                    seta.style.left = '25%';
-                    seta.style.borderBottomColor = '#1e90ff';
-                } else {
-                    seta.style.left = '75%';
-                    seta.style.borderBottomColor = '#ff3b3b';
-                }
-
-                resultado.textContent = `A cor selecionada foi: ${corVencedora}`;
-                
-                // Salva o log do giro
-                const data = new Date();
-                const log = {
-                    horario: data.toLocaleString('pt-BR'),
-                    usuario: usuarioAtual.usuario,
-                    cor: corVencedora
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            if (Object.keys(users).length === 0) {
+                users = {
+                    'admin001': 'Administrador',
+                    'user001': 'João Silva',
+                    'user002': 'Maria Santos',
+                    'user003': 'Pedro Costa'
                 };
-                historicoGiro.push(log);
-                localStorage.setItem("historicoGiro", JSON.stringify(historicoGiro));
-
-                girando = false;
-                btnGirar.disabled = false;
-                roleta.removeEventListener('transitionend', handler);
-            });
+                localStorage.setItem('roleta_users', JSON.stringify(users));
+            }
         });
 
-        // Inicializa a página
-        mostrarPagina('home-page');
+        // Funções principais
+        function verifyUser() {
+            const userId = document.getElementById('user-id').value.trim();
+            const errorElement = document.getElementById('welcome-error');
+            
+            if (!userId) {
+                errorElement.textContent = 'Por favor, digite seu ID';
+                return;
+            }
+            
+            if (users[userId]) {
+                currentUser = { id: userId, name: users[userId] };
+                document.getElementById('welcome-screen').classList.add('hidden');
+                document.getElementById('roleta-screen').classList.remove('hidden');
+                errorElement.textContent = '';
+            } else {
+                errorElement.textContent = 'ID não encontrado. Contate o administrador.';
+            }
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            
+            const spinBtn = document.getElementById('spin-btn');
+            const wheel = document.getElementById('wheel');
+            const result = document.getElementById('result');
+            const arrow = document.getElementById('arrow');
+            
+            isSpinning = true;
+            spinBtn.disabled = true;
+            result.textContent = '🎯 Girando...';
+            result.className = 'text-xl font-semibold';
+            
+            // Determinar resultado antecipadamente para cálculo preciso
+            const isBlue = Math.random() < 0.5;
+            const targetColor = isBlue ? 'azul' : 'vermelho';
+            const targetRotation = isBlue ? 1080 + 90 : 1080 + 270; // 90° para azul, 270° para vermelho
+            
+            // Configurar animação
+            wheel.style.setProperty('--final-rotation', `${targetRotation}deg`);
+            wheel.classList.add('spinning');
+            
+            setTimeout(() => {
+                wheel.classList.remove('spinning');
+                wheel.style.transform = `rotate(${targetRotation}deg)`;
+                
+                // Ajustar seta para apontar corretamente
+                setTimeout(() => {
+                    const arrowColor = isBlue ? '#3498db' : '#e74c3c';
+                    arrow.style.borderTopColor = arrowColor;
+                    
+                    // Mostrar resultado
+                    result.innerHTML = `🎊 <span class="${isBlue ? 'text-blue-600' : 'text-red-600'}">A cor selecionada foi: ${targetColor.toUpperCase()}</span> 🎉`;
+                    result.classList.add('result-pulse');
+                    
+                    // Registrar no histórico
+                    const now = new Date();
+                    const spinData = {
+                        id: currentUser.id,
+                        user: currentUser.name,
+                        color: targetColor,
+                        date: now.toLocaleDateString('pt-BR'),
+                        time: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                    };
+                    
+                    history.push(spinData);
+                    localStorage.setItem('roleta_history', JSON.stringify(history));
+                    
+                    // Atualizar histórico do ADM se estiver aberto
+                    if (document.getElementById('admin-panel').style.display === 'block') {
+                        updateHistoryTable();
+                    }
+                    
+                    spinBtn.disabled = false;
+                    isSpinning = false;
+                }, 100);
+            }, 3000);
+        }
+
+        function backToWelcome() {
+            document.getElementById('roleta-screen').classList.add('hidden');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            document.getElementById('user-id').value = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('result').className = 'text-xl font-semibold';
+            
+            // Resetar roleta
+            const wheel = document.getElementById('wheel');
+            const arrow = document.getElementById('arrow');
+            wheel.style.transform = 'rotate(0deg)';
+            arrow.style.borderTopColor = '#2c3e50';
+            
+            currentUser = null;
+        }
+
+        // Funções do ADM
+        function showAdminLogin() {
+            document.getElementById('admin-overlay').style.display = 'block';
+            document.getElementById('admin-login-panel').style.display = 'block';
+        }
+
+        function loginAdmin() {
+            const password = document.getElementById('admin-password').value;
+            const errorElement = document.getElementById('admin-login-error');
+            
+            if (password === '200822') {
+                document.getElementById('admin-login-panel').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                updateUsersTable();
+                updateHistoryTable();
+                errorElement.textContent = '';
+            } else {
+                errorElement.textContent = 'Senha incorreta';
+            }
+        }
+
+        function closeAdmin() {
+            document.getElementById('admin-overlay').style.display = 'none';
+            document.getElementById('admin-login-panel').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-login-error').textContent = '';
+        }
+
+        function updateUsersTable() {
+            const usersList = document.getElementById('users-list');
+            usersList.innerHTML = '';
+            
+            Object.entries(users).forEach(([id, name]) => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-mono text-sm">${id}</td>
+                    <td class="px-4 py-3 text-sm">${name}</td>
+                    <td class="px-4 py-3">
+                        <button onclick="editUser('${id}')" class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-blue-600 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteUser('${id}')" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-red-600">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                usersList.appendChild(row);
+            });
+        }
+
+        function updateHistoryTable() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            
+            const sortedHistory = [...history].sort((a, b) => {
+                const dateA = new Date(`${a.date} ${a.time}`);
+                const dateB = new Date(`${b.date} ${b.time}`);
+                return dateB - dateA;
+            });
+            
+            sortedHistory.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                if (index === 0) row.className += ' highlight';
+                
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-mono text-sm">${entry.id}</td>
+                    <td class="px-4 py-3 text-sm">${entry.user}</td>
+                    <td class="px-4 py-3 text-sm font-semibold ${entry.color === 'azul' ? 'text-blue-600' : 'text-red-600'}">
+                        ${entry.color.toUpperCase()}
+                    </td>
+                    <td class="px-4 py-3 text-sm">${entry.date}</td>
+                    <td class="px-4 py-3 text-sm">${entry.time}</td>
+                `;
+                historyList.appendChild(row);
+            });
+        }
+
+        function showNewUserForm() {
+            document.getElementById('new-user-form').classList.remove('hidden');
+        }
+
+        function cancelNewUser() {
+            document.getElementById('new-user-form').classList.add('hidden');
+            document.getElementById('new-user-id').value = '';
+            document.getElementById('new-user-name').value = '';
+            document.getElementById('new-user-error').textContent = '';
+        }
+
+        function addNewUser() {
+            const id = document.getElementById('new-user-id').value.trim();
+            const name = document.getElementById('new-user-name').value.trim();
+            const errorElement = document.getElementById('new-user-error');
+            
+            if (!id || !name) {
+                errorElement.textContent = 'Preencha todos os campos';
+                return;
+            }
+            
+            if (users[id]) {
+                errorElement.textContent = 'ID já existe';
+                return;
+            }
+            
+            users[id] = name;
+            localStorage.setItem('roleta_users', JSON.stringify(users));
+            updateUsersTable();
+            cancelNewUser();
+            
+            // Destacar nova entrada
+            const newRow = Array.from(document.querySelectorAll('#users-list tr')).find(tr => 
+                tr.querySelector('td:first-child').textContent === id
+            );
+            if (newRow) newRow.classList.add('highlight');
+        }
+
+        function editUser(id) {
+            const newName = prompt('Novo nome para o usuário:', users[id]);
+            if (newName && newName.trim()) {
+                users[id] = newName.trim();
+                localStorage.setItem('roleta_users', JSON.stringify(users));
+                updateUsersTable();
+            }
+        }
+
+        function deleteUser(id) {
+            if (confirm(`Tem certeza que deseja excluir o usuário "${users[id]}"?`)) {
+                delete users[id];
+                localStorage.setItem('roleta_users', JSON.stringify(users));
+                
+                history = history.filter(entry => entry.id !== id);
+                localStorage.setItem('roleta_history', JSON.stringify(history));
+                
+                updateUsersTable();
+                updateHistoryTable();
+            }
+        }
+
+        function resetData() {
+            if (confirm('Tem certeza que deseja resetar TODOS os dados? Isso apagará todos os usuários e o histórico.')) {
+                users = {
+                    'admin001': 'Administrador',
+                    'user001': 'Usuário Exemplo 1'
+                };
+                history = [];
+                localStorage.setItem('roleta_users', JSON.stringify(users));
+                localStorage.setItem('roleta_history', JSON.stringify(history));
+                updateUsersTable();
+                updateHistoryTable();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('roleta_users', JSON.stringify(users));
+            localStorage.setItem('roleta_history', JSON.stringify(history));
+            
+            // Feedback visual
+            const saveBtn = document.querySelector('#admin-panel button:last-child');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Salvo!';
+            saveBtn.classList.add('bg-green-600');
+            
+            setTimeout(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.classList.remove('bg-green-600');
+            }, 2000);
+        }
     </script>
 </body>
 </html>
